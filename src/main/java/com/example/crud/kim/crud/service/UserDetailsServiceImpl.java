@@ -3,6 +3,7 @@ package com.example.crud.kim.crud.service;
 import com.example.crud.kim.crud.dao.UserDao;
 import com.example.crud.kim.crud.model.Role;
 import com.example.crud.kim.crud.model.User;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
+@Primary
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserDao userDao;
 

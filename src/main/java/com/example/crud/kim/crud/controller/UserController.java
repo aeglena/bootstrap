@@ -30,24 +30,26 @@ public class UserController {
         String username = principal.getName();
         User user = userService.findByUsername(username);
         model.addAttribute("user", user);
-        //model.addAttribute("principal", principal);
         return "user";
     }
 
+    @GetMapping("/findOne")
+    @ResponseBody
+    public User findOne(Long id) {
+        return userService.readUser(id);
+    }
+
     @GetMapping("/admin/users")
-    public String reaAll(Model model) {
+    public String reaAll(Model model, Principal principal) {
         model.addAttribute("users", userService.readAll());
+        User user = new User();
+        user = userService.findByUsername(principal.getName());
+        model.addAttribute("user", user);
         return "/admin/users";
     }
 
-    @GetMapping("/admin/newUser")
-    public String newUser(Model model) {
-        model.addAttribute("user", new User());
-        return "newUser";
-    }
-
     @PostMapping("/admin/newUser")
-    public String saveUser(@ModelAttribute("user") User user, @RequestParam(value = "roles") String[] role) {
+    public String saveUser(@ModelAttribute("newUser") User user, @RequestParam(value = "roles_id") String[] role) {
         Set<Role> listRole = new HashSet<>();
         for (int i = 0; i < role.length; i++) {
             listRole.add(userService.getRoleByName(role[i]));
@@ -57,26 +59,20 @@ public class UserController {
         return "redirect:/admin/users";
     }
 
-    @GetMapping("/admin/update/{id}")
-    public String updateUser(Model model, @PathVariable("id") Long id) {
-        model.addAttribute("user", userService.readUser(id));
-        return "/admin/update";
-    }
-
-    @PatchMapping("/admin/update/{id}")
-    public String updateUser(@ModelAttribute("user") User user, @RequestParam(value = "roles") String[] role, @PathVariable("id") Long id) {
+    @PostMapping("/admin/update")
+    public String updateUser(@ModelAttribute("userUpdate") User user, @RequestParam(value = "uproles") String[] role) {
         Set<Role> listRole = new HashSet<>();
         for (int i = 0; i < role.length; i++) {
             listRole.add(userService.getRoleByName(role[i]));
         }
         user.setRoles(listRole);
-        userService.update(user, id);
+        userService.update(user, user.getId());
         return "redirect:/admin/users";
     }
 
-    @DeleteMapping("/admin/{id}/delete")
-    public String deleteUser(@PathVariable("id") Long id) {
-        userService.delete(id);
+    @PostMapping("/admin/delete")
+    public String deleteUser(@ModelAttribute("userDelete") User user) {
+        userService.delete(user.getId());
         return "redirect:/admin/users";
     }
 }
